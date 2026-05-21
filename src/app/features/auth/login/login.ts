@@ -1,0 +1,188 @@
+import { Component, inject } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { NgClass } from '@angular/common';
+import { AuthService } from '../../../core/services/auth.service';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [ReactiveFormsModule, RouterLink, NgClass],
+  template: `
+    <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
+      <div class="w-full max-w-md">
+
+        <!-- Logo / Brand -->
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-600 shadow-lg mb-4">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <h1 class="text-2xl font-bold text-gray-900">Welcome back</h1>
+          <p class="text-sm text-gray-500 mt-1">Sign in to your account</p>
+        </div>
+
+        <!-- Card -->
+        <div class="bg-white rounded-2xl shadow-xl shadow-indigo-100 border border-gray-100 p-8">
+          <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+            <!-- Email -->
+            <div class="mb-5">
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                Email address
+              </label>
+              <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                  </svg>
+                </div>
+                <input
+                  type="email"
+                  formControlName="email"
+                  placeholder="you@example.com"
+                  autocomplete="email"
+                  [ngClass]="fieldClass('email')"
+                  class="block w-full rounded-xl border pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 transition"
+                />
+                @if (showError('email', 'required')) {
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                    <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                }
+              </div>
+              @if (showError('email', 'required')) {
+                <p class="mt-1.5 text-xs text-red-500 flex items-center gap-1">Email is required</p>
+              } @else if (showError('email', 'email')) {
+                <p class="mt-1.5 text-xs text-red-500">Please enter a valid email address</p>
+              }
+            </div>
+
+            <!-- Password -->
+            <div class="mb-6">
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="block text-sm font-medium text-gray-700">Password</label>
+              </div>
+              <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                  </svg>
+                </div>
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  formControlName="password"
+                  placeholder="••••••••"
+                  autocomplete="current-password"
+                  [ngClass]="fieldClass('password')"
+                  class="block w-full rounded-xl border pl-10 pr-10 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 transition"
+                />
+                <button
+                  type="button"
+                  (click)="showPassword = !showPassword"
+                  class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 transition">
+                  @if (showPassword) {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
+                  } @else {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                  }
+                </button>
+              </div>
+              @if (showError('password', 'required')) {
+                <p class="mt-1.5 text-xs text-red-500">Password is required</p>
+              }
+            </div>
+
+            <!-- API Error -->
+            @if (error) {
+              <div class="mb-5 flex items-center gap-2.5 rounded-xl bg-red-50 border border-red-100 px-4 py-3">
+                <svg class="w-4 h-4 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+                <p class="text-sm text-red-700">{{ error }}</p>
+              </div>
+            }
+
+            <!-- Submit -->
+            <button
+              type="submit"
+              [disabled]="loading"
+              class="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150">
+              @if (loading) {
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                Signing in...
+              } @else {
+                Sign in
+              }
+            </button>
+
+          </form>
+        </div>
+
+        <!-- Footer link -->
+        <p class="text-center text-sm text-gray-500 mt-6">
+          Don't have an account?
+          <a routerLink="/register" class="font-semibold text-indigo-600 hover:text-indigo-500 transition">Create one</a>
+        </p>
+
+      </div>
+    </div>
+  `
+})
+export class LoginComponent {
+  private fb = inject(FormBuilder);
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
+  form = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required]
+  });
+
+  error = '';
+  loading = false;
+  showPassword = false;
+
+  fieldClass(name: string): Record<string, boolean> {
+    const ctrl = this.form.get(name)!;
+    const invalid = ctrl.invalid && (ctrl.dirty || ctrl.touched);
+    return {
+      'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500': !invalid,
+      'border-red-400 focus:ring-red-400 focus:border-red-400 bg-red-50': invalid
+    };
+  }
+
+  showError(field: string, error: string): boolean {
+    const ctrl = this.form.get(field)!;
+    return ctrl.hasError(error) && (ctrl.dirty || ctrl.touched);
+  }
+
+  submit(): void {
+    this.form.markAllAsTouched();
+    if (this.form.invalid) return;
+    this.loading = true;
+    this.error = '';
+
+    this.auth.login(this.form.value as any).subscribe({
+      next: () => this.router.navigate(['/dashboard']),
+      error: (err) => {
+        this.error = err.error?.error ?? 'Login failed. Please try again.';
+        this.loading = false;
+      }
+    });
+  }
+}

@@ -30,8 +30,8 @@ Stack: Angular 21 (standalone components), RxJS 7, Angular signals for state, Ta
 ## API integration
 - All API calls go through a service in `core/services/`. Components never call HttpClient directly.
 - Base URL: `environment.apiUrl`. Never hardcode `localhost` in service files.
-- Auth token stored in `localStorage` under key `access_token`.
-- `authInterceptor` in `core/interceptors/auth.interceptor.ts` attaches Bearer token automatically.
+- Auth token stored in `localStorage` under key `access_token`, refresh token under `refresh_token`.
+- `authInterceptor` in `core/interceptors/auth.interceptor.ts` attaches Bearer token automatically and handles 401 by calling `POST /auth/refresh`, retrying the original request, then redirecting to `/login` if refresh fails.
 
 ## Route table
 | Path | Component | Guard |

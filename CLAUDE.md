@@ -1,8 +1,8 @@
 # angular-auth-app
 
 ## What this is
-An Angular 19 frontend for JWT authentication. Connects to `go-auth-api` running on port 8080.
-Stack: Angular 19 (standalone components), RxJS 7, Angular signals for state, Tailwind CSS v3.
+An Angular 21 frontend for JWT authentication. Connects to `go-auth-api` running on port 8080.
+Stack: Angular 21 (standalone components), RxJS 7, Angular signals for state, Tailwind CSS v3.
 
 ## Angular style: standalone components, functional APIs, Angular 19 conventions
 - All components use `standalone: true`. No NgModules.

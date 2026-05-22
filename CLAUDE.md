@@ -32,6 +32,13 @@ Stack: Angular 21 (standalone components), RxJS 7, Angular signals for state, Ta
 - Base URL: `environment.apiUrl`. Never hardcode `localhost` in service files.
 - Auth token stored in `localStorage` under key `access_token`, refresh token under `refresh_token`.
 - `authInterceptor` in `core/interceptors/auth.interceptor.ts` attaches Bearer token automatically and handles 401 by calling `POST /auth/refresh`, retrying the original request, then redirecting to `/login` if refresh fails.
+- File uploads use `FormData` (not JSON) — do not set `Content-Type` header manually; let the browser set it with the boundary.
+
+## Services
+| Service | File | Methods |
+|---------|------|---------|
+| AuthService | `core/services/auth.service.ts` | `login`, `register`, `refresh`, `me`, `logout`, `isLoggedIn`, `getToken` |
+| SlipService | `core/services/slip.service.ts` | `upload(file: File)` → `POST /slips/upload` |
 
 ## Route table
 | Path | Component | Guard |
@@ -39,6 +46,7 @@ Stack: Angular 21 (standalone components), RxJS 7, Angular signals for state, Ta
 | /login | LoginComponent | none |
 | /register | RegisterComponent | none |
 | /dashboard | DashboardComponent | authGuard |
+| /upload-slip | UploadSlipComponent | authGuard |
 | / | → redirect to /dashboard | - |
 | ** | → redirect to /login | - |
 

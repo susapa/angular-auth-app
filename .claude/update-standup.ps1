@@ -1,4 +1,4 @@
-$root = $PWD.Path
+﻿$root = $PWD.Path
 $d = Get-Date -Format 'yyyy-MM-dd'
 $f = Join-Path $root "standup\standup-$d.md"
 

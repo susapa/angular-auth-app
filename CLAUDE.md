@@ -4,9 +4,9 @@
 An Angular 21 frontend for JWT authentication. Connects to `go-auth-api` running on port 8080.
 Stack: Angular 21 (standalone components), RxJS 7, Angular signals for state, Tailwind CSS v3.
 
-## Angular style: standalone components, functional APIs, Angular 19 conventions
+## Angular style: standalone components, functional APIs, Angular 21 conventions
 - All components use `standalone: true`. No NgModules.
-- File naming: `kebab-case.ts` without `.component` suffix (Angular 19 convention). E.g. `login.ts`, `dashboard.ts`.
+- File naming: `kebab-case.ts` without `.component` suffix (Angular 21 convention). E.g. `login.ts`, `dashboard.ts`.
 - Class naming: `LoginComponent`, `DashboardComponent` (PascalCase + Component suffix).
 - Router: functional guards (`CanActivateFn`) in `core/guards/`.
 - HTTP: functional interceptors (`HttpInterceptorFn`) in `core/interceptors/`, registered in `app.config.ts`.
@@ -43,8 +43,7 @@ Stack: Angular 21 (standalone components), RxJS 7, Angular signals for state, Ta
 | ** | → redirect to /login | - |
 
 ## Skills available
-- `add-feature-page`: SOP for adding a new page with optional authGuard and API data
-- `add-api-service-method`: SOP for adding a new API call to a service
+See [SKILLS.md](./SKILLS.md)
 
 ## Tailwind notes
 - Version is v3 (not v4). Do not upgrade — v4 conflicts with Angular's esbuild PostCSS pipeline.

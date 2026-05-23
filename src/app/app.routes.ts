@@ -15,6 +15,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent),
     canActivate: [authGuard]
   },
+  {
+    path: 'upload-slip',
+    loadComponent: () => import('./features/upload-slip/upload-slip').then(m => m.UploadSlipComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'slip-report',
+    loadComponent: () => import('./features/slip-report/slip-report').then(m => m.SlipReportComponent),
+    canActivate: [authGuard]
+  },
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

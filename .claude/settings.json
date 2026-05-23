@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "& '.claude/update-standup.ps1'",
+            "shell": "powershell",
+            "timeout": 10,
+            "statusMessage": "Updating standup..."
+          }
+        ]
+      }
+    ]
+  }
+}

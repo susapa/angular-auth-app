@@ -1,12 +1,12 @@
 # angular-auth-app
 
 ## What this is
-An Angular 19 frontend for JWT authentication. Connects to `go-auth-api` running on port 8080.
-Stack: Angular 19 (standalone components), RxJS 7, Angular signals for state, Tailwind CSS v3.
+An Angular 21 frontend for JWT authentication. Connects to `go-auth-api` running on port 8080.
+Stack: Angular 21 (standalone components), RxJS 7, Angular signals for state, Tailwind CSS v3.
 
-## Angular style: standalone components, functional APIs, Angular 19 conventions
+## Angular style: standalone components, functional APIs, Angular 21 conventions
 - All components use `standalone: true`. No NgModules.
-- File naming: `kebab-case.ts` without `.component` suffix (Angular 19 convention). E.g. `login.ts`, `dashboard.ts`.
+- File naming: `kebab-case.ts` without `.component` suffix (Angular 21 convention). E.g. `login.ts`, `dashboard.ts`.
 - Class naming: `LoginComponent`, `DashboardComponent` (PascalCase + Component suffix).
 - Router: functional guards (`CanActivateFn`) in `core/guards/`.
 - HTTP: functional interceptors (`HttpInterceptorFn`) in `core/interceptors/`, registered in `app.config.ts`.
@@ -30,8 +30,15 @@ Stack: Angular 19 (standalone components), RxJS 7, Angular signals for state, Ta
 ## API integration
 - All API calls go through a service in `core/services/`. Components never call HttpClient directly.
 - Base URL: `environment.apiUrl`. Never hardcode `localhost` in service files.
-- Auth token stored in `localStorage` under key `access_token`.
-- `authInterceptor` in `core/interceptors/auth.interceptor.ts` attaches Bearer token automatically.
+- Auth token stored in `localStorage` under key `access_token`, refresh token under `refresh_token`.
+- `authInterceptor` in `core/interceptors/auth.interceptor.ts` attaches Bearer token automatically and handles 401 by calling `POST /auth/refresh`, retrying the original request, then redirecting to `/login` if refresh fails.
+- File uploads use `FormData` (not JSON) — do not set `Content-Type` header manually; let the browser set it with the boundary.
+
+## Services
+| Service | File | Methods |
+|---------|------|---------|
+| AuthService | `core/services/auth.service.ts` | `login`, `register`, `refresh`, `me`, `logout`, `isLoggedIn`, `getToken` |
+| SlipService | `core/services/slip.service.ts` | `upload(file: File)` → `POST /slips/upload` |
 
 ## Route table
 | Path | Component | Guard |
@@ -39,12 +46,12 @@ Stack: Angular 19 (standalone components), RxJS 7, Angular signals for state, Ta
 | /login | LoginComponent | none |
 | /register | RegisterComponent | none |
 | /dashboard | DashboardComponent | authGuard |
+| /upload-slip | UploadSlipComponent | authGuard |
 | / | → redirect to /dashboard | - |
 | ** | → redirect to /login | - |
 
 ## Skills available
-- `add-feature-page`: SOP for adding a new page with optional authGuard and API data
-- `add-api-service-method`: SOP for adding a new API call to a service
+See [SKILLS.md](./SKILLS.md)
 
 ## Tailwind notes
 - Version is v3 (not v4). Do not upgrade — v4 conflicts with Angular's esbuild PostCSS pipeline.

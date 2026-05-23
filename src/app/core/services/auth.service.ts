@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 import { LoginRequest, RegisterRequest, AuthResponse, User } from '../models/auth.models';
 
 const TOKEN_KEY = 'access_token';
+const REFRESH_KEY = 'refresh_token';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -14,13 +15,20 @@ export class AuthService {
 
   register(req: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, req).pipe(
-      tap(resp => localStorage.setItem(TOKEN_KEY, resp.access_token))
+      tap(resp => this.storeTokens(resp))
     );
   }
 
   login(req: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, req).pipe(
-      tap(resp => localStorage.setItem(TOKEN_KEY, resp.access_token))
+      tap(resp => this.storeTokens(resp))
+    );
+  }
+
+  refresh(): Observable<AuthResponse> {
+    const refresh_token = localStorage.getItem(REFRESH_KEY);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/refresh`, { refresh_token }).pipe(
+      tap(resp => this.storeTokens(resp))
     );
   }
 
@@ -30,6 +38,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_KEY);
   }
 
   isLoggedIn(): boolean {
@@ -38,5 +47,10 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem(TOKEN_KEY);
+  }
+
+  private storeTokens(resp: AuthResponse): void {
+    localStorage.setItem(TOKEN_KEY, resp.access_token);
+    localStorage.setItem(REFRESH_KEY, resp.refresh_token);
   }
 }

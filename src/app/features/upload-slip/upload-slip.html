@@ -1,0 +1,140 @@
+<div class="min-h-screen bg-gray-50">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a routerLink="/dashboard" class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <span class="font-semibold text-gray-900">MyApp</span>
+        </a>
+        <span class="text-gray-300">|</span>
+        <span class="text-sm font-medium text-indigo-600">Upload Slip</span>
+        <a routerLink="/slip-report"
+          class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 transition px-3 py-1.5 rounded-lg hover:bg-indigo-50">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Slip Report
+        </a>
+      </div>
+
+      @if (user()) {
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+            <span class="text-sm font-semibold text-indigo-600">
+              {{ user()!.name.charAt(0).toUpperCase() }}
+            </span>
+          </div>
+          <span class="text-sm text-gray-700 hidden sm:block">{{ user()!.name }}</span>
+          <button
+            (click)="logout()"
+            class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition px-3 py-1.5 rounded-lg hover:bg-gray-100">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+            Sign out
+          </button>
+        </div>
+      }
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="max-w-5xl mx-auto px-6 py-10">
+
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-gray-900">Upload Slip</h1>
+      <p class="text-gray-500 mt-1 text-sm">Upload your payment slip or receipt image.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 max-w-xl">
+
+      <!-- Success -->
+      @if (uploadSuccess()) {
+        <div class="flex items-center gap-3 bg-green-50 border border-green-100 rounded-xl px-5 py-4 text-green-700 mb-6">
+          <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm font-medium">Slip uploaded successfully!</span>
+        </div>
+      }
+
+      <!-- Error -->
+      @if (uploadError()) {
+        <div class="flex items-center gap-3 bg-red-50 border border-red-100 rounded-xl px-5 py-4 text-red-700 mb-6">
+          <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-sm font-medium">{{ uploadError() }}</span>
+        </div>
+      }
+
+      <!-- Drop zone -->
+      <div
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+        [class]="dragOver()
+          ? 'border-2 border-indigo-400 bg-indigo-50'
+          : 'border-2 border-dashed border-gray-200 bg-gray-50 hover:border-indigo-300 hover:bg-indigo-50'"
+        class="rounded-xl p-8 text-center transition-colors cursor-pointer"
+        (click)="fileInput.click()">
+
+        @if (previewUrl()) {
+          <img [src]="previewUrl()" alt="Preview" class="mx-auto max-h-48 rounded-lg object-contain mb-4"/>
+        } @else {
+          <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
+          </div>
+        }
+
+        @if (selectedFile()) {
+          <p class="text-sm font-medium text-gray-900">{{ selectedFile()!.name }}</p>
+          <p class="text-xs text-gray-400 mt-1">Click to change file</p>
+        } @else {
+          <p class="text-sm font-medium text-gray-700">Drop your file here, or <span class="text-indigo-600">browse</span></p>
+          <p class="text-xs text-gray-400 mt-1">PNG, JPG, PDF up to 10MB</p>
+        }
+      </div>
+
+      <input
+        #fileInput
+        type="file"
+        accept="image/*,.pdf"
+        class="hidden"
+        (change)="onFileSelected($event)"/>
+
+      <!-- Upload button -->
+      <button
+        (click)="upload()"
+        [disabled]="!selectedFile() || uploading()"
+        class="mt-6 w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition disabled:opacity-40 disabled:cursor-not-allowed">
+        @if (uploading()) {
+          <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+          </svg>
+          Uploading...
+        } @else {
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+          </svg>
+          Upload Slip
+        }
+      </button>
+
+    </div>
+  </main>
+</div>

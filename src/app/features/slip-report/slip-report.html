@@ -1,0 +1,130 @@
+<div class="min-h-screen bg-gray-50">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a routerLink="/dashboard" class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <span class="font-semibold text-gray-900">MyApp</span>
+        </a>
+        <span class="text-gray-300">|</span>
+        <span class="text-sm font-medium text-indigo-600">Slip Report</span>
+      </div>
+
+      @if (user()) {
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+            <span class="text-sm font-semibold text-indigo-600">
+              {{ user()!.name.charAt(0).toUpperCase() }}
+            </span>
+          </div>
+          <span class="text-sm text-gray-700 hidden sm:block">{{ user()!.name }}</span>
+          <button
+            (click)="logout()"
+            class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition px-3 py-1.5 rounded-lg hover:bg-gray-100">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+            Sign out
+          </button>
+        </div>
+      }
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="max-w-5xl mx-auto px-6 py-10">
+
+    <div class="mb-8 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Slip Report</h1>
+        <p class="text-gray-500 mt-1 text-sm">History of all your uploaded slips.</p>
+      </div>
+      <a routerLink="/upload-slip"
+        class="flex items-center gap-1.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition px-4 py-2 rounded-xl">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+        </svg>
+        Upload New
+      </a>
+    </div>
+
+    <!-- Error -->
+    @if (error()) {
+      <div class="flex items-center gap-3 bg-red-50 border border-red-100 rounded-2xl px-5 py-4 text-red-700">
+        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+        </svg>
+        <span class="text-sm font-medium">{{ error() }}</span>
+      </div>
+    }
+
+    <!-- Loading skeleton -->
+    @if (loading()) {
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-pulse">
+        @for (i of [1,2,3]; track i) {
+          <div class="px-6 py-4 border-b border-gray-50 flex items-center gap-4">
+            <div class="w-9 h-9 rounded-lg bg-gray-200 flex-shrink-0"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-3.5 w-48 bg-gray-200 rounded"></div>
+              <div class="h-3 w-32 bg-gray-100 rounded"></div>
+            </div>
+            <div class="h-3 w-20 bg-gray-100 rounded"></div>
+          </div>
+        }
+      </div>
+
+    <!-- Empty state -->
+    } @else if (uploads().length === 0) {
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+          <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <p class="text-sm font-medium text-gray-700">No slips uploaded yet</p>
+        <p class="text-xs text-gray-400 mt-1">Your upload history will appear here.</p>
+      </div>
+
+    <!-- Table -->
+    } @else {
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <h2 class="font-semibold text-gray-900">Uploads</h2>
+          <span class="text-xs text-gray-400">{{ uploads().length }} file{{ uploads().length !== 1 ? 's' : '' }}</span>
+        </div>
+
+        <div class="divide-y divide-gray-50">
+          @for (slip of uploads(); track slip.id) {
+            <div class="px-6 py-4 flex items-center gap-4">
+              <div class="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium text-gray-900 truncate">{{ slip.filename }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">{{ formatSize(slip.size) }}</p>
+              </div>
+
+              <span class="text-xs text-gray-400 whitespace-nowrap">
+                {{ slip.uploaded_at | date:'d MMM y, HH:mm' }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </main>
+</div>

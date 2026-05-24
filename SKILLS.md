@@ -6,3 +6,4 @@
 - `run`: Launch the Angular dev server and open the app in a browser
 - `code-review`: Review the current diff for correctness bugs
 - `security-review`: Security review of pending changes on the current branch
+- `update-config`: Configure Claude Code settings (hooks, permissions, env vars)

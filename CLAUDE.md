@@ -3,6 +3,7 @@
 ## What this is
 An Angular 21 frontend for JWT authentication. Connects to `go-auth-api` running on port 8080.
 Stack: Angular 21 (standalone components), RxJS 7, Angular signals for state, Tailwind CSS v3.
+Deployed on **Azure Static Web Apps** at `https://wonderful-pebble-03b33ba00.7.azurestaticapps.net`
 
 ## Angular style: standalone components, functional APIs, Angular 21 conventions
 - All components use `standalone: true`. No NgModules.
@@ -25,6 +26,8 @@ Stack: Angular 21 (standalone components), RxJS 7, Angular signals for state, Ta
   - `features/auth/login/login.ts`
   - `features/auth/register/register.ts`
   - `features/dashboard/dashboard.ts`
+  - `features/upload-slip/upload-slip.ts`
+  - `features/slip-report/slip-report.ts`
 - New page = new folder under `features/<feature>/<page>/<page>.ts`
 
 ## API integration
@@ -38,7 +41,7 @@ Stack: Angular 21 (standalone components), RxJS 7, Angular signals for state, Ta
 | Service | File | Methods |
 |---------|------|---------|
 | AuthService | `core/services/auth.service.ts` | `login`, `register`, `refresh`, `me`, `logout`, `isLoggedIn`, `getToken` |
-| SlipService | `core/services/slip.service.ts` | `upload(file: File)` → `POST /slips/upload` |
+| SlipService | `core/services/slip.service.ts` | `upload(file: File)` → `POST /slips/upload`, `getReport()` → `GET /slips/report` |
 
 ## Route table
 | Path | Component | Guard |
@@ -47,8 +50,24 @@ Stack: Angular 21 (standalone components), RxJS 7, Angular signals for state, Ta
 | /register | RegisterComponent | none |
 | /dashboard | DashboardComponent | authGuard |
 | /upload-slip | UploadSlipComponent | authGuard |
+| /slip-report | SlipReportComponent | authGuard |
 | / | → redirect to /dashboard | - |
 | ** | → redirect to /login | - |
+
+## Environments
+- `src/environments/environment.ts` — local dev (`http://localhost:8080`)
+- `src/environments/environment.prod.ts` — production (Azure Container Apps URL)
+- `angular.json` production config มี `fileReplacements` swap environment file อัตโนมัติตอน build
+
+## Deployment: Azure Static Web Apps
+- Auto-deploy เมื่อ push ขึ้น `main` ผ่าน `.github/workflows/azure-static-web-apps-wonderful-pebble-03b33ba00.yml`
+- `public/staticwebapp.config.json` — redirect ทุก path → `index.html` (แก้ปัญหา 404 เมื่อ refresh)
+- Build command: `ng build` (default configuration = production จาก `angular.json`)
+
+## Standup automation
+- `.claude/settings.json` มี Stop hook รัน `.claude/update-standup.ps1` ทุกครั้งที่ Claude หยุด
+- Script generate `standup/standup-YYYY-MM-DD.md` จาก `git log --since=today`
+- `standup/` โฟลเดอร์อยู่ใน `.gitignore`
 
 ## Skills available
 See [SKILLS.md](./SKILLS.md)

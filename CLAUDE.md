@@ -41,7 +41,7 @@ Deployed on **Azure Static Web Apps** at `https://wonderful-pebble-03b33ba00.7.a
 | Service | File | Methods |
 |---------|------|---------|
 | AuthService | `core/services/auth.service.ts` | `login`, `register`, `refresh`, `me`, `logout`, `isLoggedIn`, `getToken` |
-| SlipService | `core/services/slip.service.ts` | `upload(file: File)` → `POST /slips/upload`, `getReport()` → `GET /slips/report` |
+| SlipService | `core/services/slip.service.ts` | `upload(file: File)` → `POST /slips/upload`, `getReport()` → `GET /slips/report` (returns blob URL ใน `path` field) |
 
 ## Route table
 | Path | Component | Guard |
